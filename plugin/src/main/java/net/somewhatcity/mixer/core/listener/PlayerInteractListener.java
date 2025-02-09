@@ -10,18 +10,22 @@
 
 package net.somewhatcity.mixer.core.listener;
 
-import com.destroystokyo.paper.event.block.BlockDestroyEvent;
+
 import de.tr7zw.changeme.nbtapi.NBTItem;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.TextComponent;
 import net.somewhatcity.mixer.core.MixerPlugin;
 import net.somewhatcity.mixer.core.audio.IMixerAudioPlayer;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Jukebox;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
 import java.util.HashMap;
@@ -61,7 +65,7 @@ public class PlayerInteractListener implements Listener {
                      */
                 }
 
-                e.getPlayer().sendActionBar(MiniMessage.miniMessage().deserialize("<red>playback stopped"));
+                e.getPlayer().spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(ChatColor.RED + "playback stopped"));
                 audioPlayer.stop();
             }
 
@@ -77,7 +81,7 @@ public class PlayerInteractListener implements Listener {
     }
 
     @EventHandler
-    public void onBlockBreak(BlockDestroyEvent e) {
+    public void onBlockBreak(BlockBreakEvent e) {
         if(e.getBlock().getType().equals(Material.JUKEBOX)) {
             Location loc = e.getBlock().getLocation();
             if(MixerPlugin.getPlugin().playerHashMap().containsKey(loc)) {

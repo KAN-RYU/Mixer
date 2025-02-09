@@ -123,7 +123,7 @@ public class IMixerAudioPlayer implements MixerAudioPlayer {
         dspSettings = Utils.loadNbtData(location, "mixer_dsp");
 
         speakers.forEach(speaker -> {
-            speaker.location().toCenterLocation().add(0, 1, 0);
+            Utils.toCenterLocation(speaker.location()).add(0, 1, 0);
             LocationalAudioChannel channel = API.createLocationalAudioChannel(
                     UUID.randomUUID(),
                     API.fromServerLevel(speaker.location().getWorld()),

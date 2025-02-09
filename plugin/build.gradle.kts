@@ -21,10 +21,19 @@ repositories {
         name = "henkelmax.public"
         url = uri("https://maven.maxhenkel.de/repository/public")
     }
+    maven {
+        name = "spigotmc-repo"
+        url = uri("https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
+    }
+    maven {
+        name = "sonatype"
+        url = uri("https://oss.sonatype.org/content/groups/public/")
+    }
 }
 
 dependencies {
-    compileOnly("io.papermc.paper:paper-api:1.19.4-R0.1-SNAPSHOT")
+    compileOnly("org.spigotmc:spigot-api:1.19.4-R0.1-SNAPSHOT")
+    implementation("net.kyori:adventure-platform-bukkit:4.3.4")
     implementation("de.maxhenkel.voicechat:voicechat-api:2.4.11")
     //implementation("dev.arbjerg:lavaplayer:2.0.1")
     //implementation("dev.arbjerg:lavaplayer:727959e9f621fc457b3a5adafcfffb55fdeaa538-SNAPSHOT")

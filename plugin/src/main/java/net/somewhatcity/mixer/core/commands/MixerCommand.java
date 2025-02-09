@@ -28,7 +28,9 @@ import dev.jorel.commandapi.arguments.GreedyStringArgument;
 import dev.jorel.commandapi.arguments.IntegerArgument;
 import dev.jorel.commandapi.arguments.LocationArgument;
 import dev.jorel.commandapi.arguments.LocationType;
+import net.kyori.adventure.platform.bukkit.BukkitComponentSerializer;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.serializer.bungeecord.BungeeComponentSerializer;
 import net.somewhatcity.mixer.core.commands.dsp.DspCommand;
 import net.somewhatcity.mixer.core.MixerPlugin;
 import net.somewhatcity.mixer.core.util.Utils;
@@ -85,9 +87,11 @@ public class MixerCommand extends CommandAPICommand {
                             AudioTrackInfo info = audioTrack.getInfo();
                             Bukkit.getScheduler().runTask(MixerPlugin.getPlugin(), () -> {
                                 ItemMeta meta = item.getItemMeta();
-                                meta.displayName(MM.deserialize("<reset>%s".formatted(info.title)));
-                                meta.lore(Arrays.asList(
-                                        MM.deserialize("<reset>%s".formatted(info.author))
+                                meta.setDisplayName(BukkitComponentSerializer.legacy().serialize(MM.deserialize("<reset>%s".formatted(info.title))));
+//                                meta.displayName(MM.deserialize("<reset>%s".formatted(info.title)));
+
+                                meta.setLore(Arrays.asList(
+                                        BukkitComponentSerializer.legacy().serialize(MM.deserialize("<reset>%s".formatted(info.author)))
                                 ));
                                 item.setItemMeta(meta);
                                 NBTItem nbtItem = new NBTItem(item);
@@ -101,10 +105,14 @@ public class MixerCommand extends CommandAPICommand {
                             AudioTrackInfo info = audioPlaylist.getSelectedTrack().getInfo();
                             Bukkit.getScheduler().runTask(MixerPlugin.getPlugin(), () -> {
                                 ItemMeta meta = item.getItemMeta();
-                                meta.displayName(MM.deserialize("<reset>%s".formatted(info.title)));
-                                meta.lore(Arrays.asList(
-                                        MM.deserialize("<reset>%s".formatted(info.author))
+                                meta.setDisplayName(BukkitComponentSerializer.legacy().serialize(MM.deserialize("<reset>%s".formatted(info.title))));
+//                                meta.displayName(MM.deserialize("<reset>%s".formatted(info.title)));
+                                meta.setLore(Arrays.asList(
+                                        BukkitComponentSerializer.legacy().serialize(MM.deserialize("<reset>%s".formatted(info.author)))
                                 ));
+//                                meta.lore(Arrays.asList(
+//                                        MM.deserialize("<reset>%s".formatted(info.author))
+//                                ));
                                 item.setItemMeta(meta);
                                 NBTItem nbtItem = new NBTItem(item);
                                 nbtItem.setString("mixer_data", finalUrl);
@@ -114,12 +122,12 @@ public class MixerCommand extends CommandAPICommand {
 
                         @Override
                         public void noMatches() {
-                            player.sendMessage(MM.deserialize("<red>No matches"));
+                            MixerPlugin.getPlugin().adventure().player(player).sendMessage(MM.deserialize("<red>No matches"));
                         }
 
                         @Override
                         public void loadFailed(FriendlyException e) {
-                            player.sendMessage(MM.deserialize("<red>%s".formatted(e.getMessage())));
+                            MixerPlugin.getPlugin().adventure().player(player).sendMessage(MM.deserialize("<red>%s".formatted(e.getMessage())));
                         }
                     });
                 })
@@ -132,7 +140,7 @@ public class MixerCommand extends CommandAPICommand {
                     Block block = jukeboxLoc.getBlock();
 
                     if(!block.getType().equals(Material.JUKEBOX)) {
-                        player.sendMessage(MM.deserialize("<red>No jukebox at location"));
+                        MixerPlugin.getPlugin().adventure().player(player).sendMessage(MM.deserialize("<red>No jukebox at location"));
                         return;
                     }
 
@@ -146,7 +154,7 @@ public class MixerCommand extends CommandAPICommand {
                         linked = (JsonArray) JsonParser.parseString(data);
                     }
 
-                    Location loc = player.getLocation().toCenterLocation();
+                    Location loc = Utils.toCenterLocation(player.getLocation());
 
                     JsonObject locData = new JsonObject();
                     locData.addProperty("x", loc.getX());
@@ -157,7 +165,7 @@ public class MixerCommand extends CommandAPICommand {
                     linked.add(locData);
                     jukebox.getPersistentDataContainer().setString("mixer_links", linked.toString());
 
-                    player.sendMessage(MM.deserialize("<green>Location linked to jukebox"));
+                    MixerPlugin.getPlugin().adventure().player(player).sendMessage(MM.deserialize("<green>Location linked to jukebox"));
                 })
         );
         withSubcommand(new CommandAPICommand("redstone")
@@ -171,7 +179,7 @@ public class MixerCommand extends CommandAPICommand {
                     Block block = jukeboxLoc.getBlock();
 
                     if(!block.getType().equals(Material.JUKEBOX)) {
-                        player.sendMessage(MM.deserialize("<red>No jukebox at location"));
+                        MixerPlugin.getPlugin().adventure().player(player).sendMessage(MM.deserialize("<red>No jukebox at location"));
                         return;
                     }
 
@@ -185,7 +193,7 @@ public class MixerCommand extends CommandAPICommand {
                     }
 
                     if(player.getTargetBlockExact(10) == null) {
-                        player.sendMessage(MM.deserialize("<red>Not looking at a block"));
+                        MixerPlugin.getPlugin().adventure().player(player).sendMessage(MM.deserialize("<red>Not looking at a block"));
                         return;
                     }
 
@@ -203,7 +211,7 @@ public class MixerCommand extends CommandAPICommand {
                     redstones.add(locData);
                     jukebox.getPersistentDataContainer().setString("mixer_redstones", redstones.toString());
 
-                    player.sendMessage(MM.deserialize("<green>Redstone-Location linked to jukebox"));
+                    MixerPlugin.getPlugin().adventure().player(player).sendMessage(MM.deserialize("<green>Redstone-Location linked to jukebox"));
                 }))
         );
 

@@ -13,6 +13,7 @@ package net.somewhatcity.mixer.core;
 import de.maxhenkel.voicechat.api.BukkitVoicechatService;
 import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandAPIBukkitConfig;
+import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import net.somewhatcity.mixer.api.MixerApi;
 import net.somewhatcity.mixer.core.api.ImplMixerApi;
 import net.somewhatcity.mixer.core.audio.IMixerAudioPlayer;
@@ -33,6 +34,8 @@ public class MixerPlugin extends JavaPlugin {
     private ImplMixerApi api;
     private static final String PLUGIN_ID = "mixer";
     private HashMap<Location, IMixerAudioPlayer> playerHashMap = new HashMap<>();
+    private BukkitAudiences adventure;
+
     @Override
     public void onLoad() {
         CommandAPI.onLoad(new CommandAPIBukkitConfig(this).verboseOutput(false));
@@ -40,11 +43,20 @@ public class MixerPlugin extends JavaPlugin {
 
     public static PlayerInteractListener playerInteractListener;
 
+    public BukkitAudiences adventure() {
+        if (this.adventure==null) {
+            throw new IllegalStateException("Not Loaded");
+        }
+        return this.adventure;
+    }
+
     @Override
     public void onEnable() {
         plugin = this;
 
         new Metrics(this,19824);
+
+        this.adventure = BukkitAudiences.create(this);
 
         CommandAPI.onEnable();
 
@@ -72,6 +84,10 @@ public class MixerPlugin extends JavaPlugin {
     @Override
     public void onDisable() {
         CommandAPI.onDisable();
+        if (this.adventure != null) {
+            this.adventure.close();
+            this.adventure = null;
+        }
     }
     public HashMap<Location, IMixerAudioPlayer> playerHashMap() {
         return playerHashMap;

@@ -15,6 +15,7 @@ import dev.jorel.commandapi.CommandAPICommand;
 import dev.jorel.commandapi.arguments.LocationArgument;
 import dev.jorel.commandapi.arguments.LocationType;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.somewhatcity.mixer.core.MixerPlugin;
 import net.somewhatcity.mixer.core.util.Utils;
 import org.bukkit.Location;
 
@@ -33,12 +34,12 @@ public class DspCommand extends CommandAPICommand {
 
             JsonObject obj = Utils.loadNbtData(location, "mixer_dsp");
             if(obj == null) {
-                sender.sendMessage(MiniMessage.miniMessage().deserialize("<red>No jukebox at location"));
+                MixerPlugin.getPlugin().adventure().sender(sender).sendMessage(MiniMessage.miniMessage().deserialize("<red>No jukebox at location"));
                 return;
             }
 
             Utils.saveNbtData(location, "mixer_dsp", new JsonObject());
-            sender.sendMessage(MiniMessage.miniMessage().deserialize("<green>DSP reset"));
+            MixerPlugin.getPlugin().adventure().sender(sender).sendMessage(MiniMessage.miniMessage().deserialize("<green>DSP reset"));
         });
     }
 }

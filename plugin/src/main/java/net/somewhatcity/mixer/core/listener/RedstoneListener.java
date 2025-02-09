@@ -11,6 +11,7 @@
 package net.somewhatcity.mixer.core.listener;
 
 import de.tr7zw.changeme.nbtapi.NBTItem;
+import net.kyori.adventure.platform.bukkit.BukkitComponentSerializer;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.somewhatcity.mixer.api.MixerAudioPlayer;
@@ -106,7 +107,8 @@ public class RedstoneListener implements Listener {
                 BookMeta bookMeta = (BookMeta) item.getItemMeta();
                 StringBuilder sb = new StringBuilder();
 
-                for(Component component : bookMeta.pages()) {
+                for(String string : bookMeta.getPages()) {
+                    Component component = BukkitComponentSerializer.legacy().deserialize(string);
                     sb.append(MiniMessage.miniMessage().serialize(component));
                 }
 
