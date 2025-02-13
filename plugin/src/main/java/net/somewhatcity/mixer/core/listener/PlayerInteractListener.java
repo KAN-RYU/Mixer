@@ -27,6 +27,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.EquipmentSlot;
 
 import java.util.HashMap;
 
@@ -35,6 +36,7 @@ public class PlayerInteractListener implements Listener {
 
     @EventHandler
     public void onInteract(PlayerInteractEvent e) {
+        if(e.getHand() != EquipmentSlot.HAND) return;
         if(e.getClickedBlock() == null) return;
         if(!e.getClickedBlock().getType().equals(Material.JUKEBOX)) return;
         Jukebox jukeboxState = (Jukebox) e.getClickedBlock().getState();
@@ -71,6 +73,7 @@ public class PlayerInteractListener implements Listener {
 
             if(e.getItem() == null) {
                 if (!MixerPlugin.currentLoaded.containsKey(e.getPlayer().getUniqueId())) return;
+                e.setCancelled(true);
                 IMixerAudioPlayer audioPlayer = new IMixerAudioPlayer(location);
                 audioPlayer.load(MixerPlugin.currentLoaded.get(e.getPlayer().getUniqueId()));
                 MixerPlugin.currentLoaded.remove(e.getPlayer().getUniqueId());
