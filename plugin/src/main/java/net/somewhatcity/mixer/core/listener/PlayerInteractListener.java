@@ -65,11 +65,17 @@ public class PlayerInteractListener implements Listener {
                      */
                 }
 
-                e.getPlayer().spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(ChatColor.RED + "playback stopped"));
+                e.getPlayer().spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(ChatColor.RED + "재생 멈춤"));
                 audioPlayer.stop();
             }
 
-            if(e.getItem() == null) return;
+            if(e.getItem() == null) {
+                if (!MixerPlugin.currentLoaded.containsKey(e.getPlayer().getUniqueId())) return;
+                IMixerAudioPlayer audioPlayer = new IMixerAudioPlayer(location);
+                audioPlayer.load(MixerPlugin.currentLoaded.get(e.getPlayer().getUniqueId()));
+                MixerPlugin.currentLoaded.remove(e.getPlayer().getUniqueId());
+                return;
+            }
             NBTItem nbtItem = new NBTItem(e.getItem());
             if(!nbtItem.hasKey("mixer_data")) return;
             String url = nbtItem.getString("mixer_data");

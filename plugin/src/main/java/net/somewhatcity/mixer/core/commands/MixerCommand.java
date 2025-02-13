@@ -66,7 +66,7 @@ public class MixerCommand extends CommandAPICommand {
                 .executesPlayer((player, args) -> {
                     ItemStack item = player.getInventory().getItemInMainHand();
                     if (!Utils.isDisc(item)) {
-                        player.sendMessage("§cYou must be holding a music disc!");
+                        player.sendMessage("§c음반을 들고 있어야 구울 수 있습니다!");
                         return;
                     }
 
@@ -122,7 +122,7 @@ public class MixerCommand extends CommandAPICommand {
 
                         @Override
                         public void noMatches() {
-                            MixerPlugin.getPlugin().adventure().player(player).sendMessage(MM.deserialize("<red>No matches"));
+                            MixerPlugin.getPlugin().adventure().player(player).sendMessage(MM.deserialize("<red>파일을 찾을 수 없습니다."));
                         }
 
                         @Override
@@ -131,6 +131,51 @@ public class MixerCommand extends CommandAPICommand {
                         }
                     });
                 })
+        );
+        withSubcommand(new CommandAPICommand("play")
+                        .withArguments(new GreedyStringArgument("url"))
+                        .executesPlayer((player, args) -> {
+                            String url = (String) args.get(0);
+
+                            if(url.startsWith("file:")) {
+                                String filename = url.substring(5);
+                                File file = new File(filename);
+                                if(file.exists() && file.isFile()) {
+                                    url = file.getAbsolutePath();
+                                }
+                            }
+                            String finalUrl = url;
+                            APM.loadItem(url, new AudioLoadResultHandler() {
+
+                                @Override
+                                public void trackLoaded(AudioTrack audioTrack) {
+                                    AudioTrackInfo info = audioTrack.getInfo();
+                                    Bukkit.getScheduler().runTask(MixerPlugin.getPlugin(), () -> {
+                                        MixerPlugin.getPlugin().adventure().player(player).sendMessage(MM.deserialize(String.format("<green>%s 파일이 준비되었습니다. 주크 박스에 우클릭하면 재생됩니다.", info.title)));
+                                        MixerPlugin.currentLoaded.put(player.getUniqueId(), finalUrl);
+                                    });
+                                }
+
+                                @Override
+                                public void playlistLoaded(AudioPlaylist audioPlaylist) {
+                                    AudioTrackInfo info = audioPlaylist.getSelectedTrack().getInfo();
+                                    Bukkit.getScheduler().runTask(MixerPlugin.getPlugin(), () -> {
+                                        MixerPlugin.getPlugin().adventure().player(player).sendMessage(MM.deserialize(String.format("<green>%s 파일이 준비되었습니다. 주크 박스에 우클릭하면 재생됩니다.", info.title)));
+                                        MixerPlugin.currentLoaded.put(player.getUniqueId(), finalUrl);
+                                    });
+                                }
+
+                                @Override
+                                public void noMatches() {
+                                    MixerPlugin.getPlugin().adventure().player(player).sendMessage(MM.deserialize("<red>파일을 찾을 수 없습니다."));
+                                }
+
+                                @Override
+                                public void loadFailed(FriendlyException e) {
+                                    MixerPlugin.getPlugin().adventure().player(player).sendMessage(MM.deserialize("<red>%s".formatted(e.getMessage())));
+                                }
+                            });
+                        })
         );
         withSubcommand(new CommandAPICommand("link")
                 .withPermission("mixer.command.link")

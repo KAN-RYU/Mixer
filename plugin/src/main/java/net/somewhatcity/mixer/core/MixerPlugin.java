@@ -28,6 +28,7 @@ import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.HashMap;
+import java.util.UUID;
 
 public class MixerPlugin extends JavaPlugin {
     private static MixerPlugin plugin;
@@ -35,6 +36,8 @@ public class MixerPlugin extends JavaPlugin {
     private static final String PLUGIN_ID = "mixer";
     private HashMap<Location, IMixerAudioPlayer> playerHashMap = new HashMap<>();
     private BukkitAudiences adventure;
+
+    public static HashMap<UUID, String> currentLoaded;
 
     @Override
     public void onLoad() {
@@ -57,6 +60,7 @@ public class MixerPlugin extends JavaPlugin {
         new Metrics(this,19824);
 
         this.adventure = BukkitAudiences.create(this);
+        this.currentLoaded = new HashMap<>();
 
         CommandAPI.onEnable();
 
